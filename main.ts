@@ -6,7 +6,7 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     mySprite.vy = -220
 })
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    projectile = sprites.createProjectileFromSide(img`
+    projectile2 = sprites.createProjectileFromSprite(img`
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
@@ -23,43 +23,9 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
-        `, 79, 0)
+        `, mySprite, 150, 0)
 })
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Moneda, function (sprite, otherSprite) {
-    sprites.destroy(mySprite)
-    info.changeScoreBy(1)
-    music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.UntilDone)
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
-    mySprite.setKind(SpriteKind.Player_imnmune)
-    info.changeLifeBy(-1)
-    mySprite.startEffect(effects.disintegrate)
-    music.play(music.melodyPlayable(music.jumpDown), music.PlaybackMode.UntilDone)
-    mySprite.setKind(SpriteKind.Player)
-    mySprite.setImage(img`
-        . . . . . . . c c . . . . . . . 
-        . . . . . . c 5 c . . . . . . . 
-        . . . . c c 5 5 5 c c c . . . . 
-        . . c c c c 5 5 5 5 c b c c . . 
-        . c b b 5 b 5 5 5 5 b 5 b b c . 
-        . c b 5 5 b b 5 5 b b 5 5 b c . 
-        . . c 5 5 5 b b b b 5 5 5 f . . 
-        . . . f 5 5 5 5 5 5 5 5 f f . . 
-        . . . . f e e e f b e e f f . . 
-        . . . . f e b b f 1 b f f f . . 
-        . . . . f b b b b b b f f . . . 
-        . . . . . f e e e e f e e . . . 
-        . . . . . f 5 b b e b b e . . . 
-        . . . . f 5 5 5 5 e b b e . . . 
-        . . . . c b 5 5 5 5 e e . . . . 
-        . . . . . f f f f f f . . . . . 
-        `)
-})
-scene.onOverlapTile(SpriteKind.Enemy, assets.tile`transparency16`, function (sprite, location) {
-    mySprite.setPosition(0, 0)
-    info.changeLifeBy(-1)
-})
-scene.onOverlapTile(SpriteKind.Player, assets.tile`transparency16`, function (sprite, location) {
+scene.onOverlapTile(SpriteKind.Player, assets.tile`oops`, function (sprite, location) {
     scene.setBackgroundImage(img`
         aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -186,13 +152,47 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`transparency16`, function (sp
     music.play(music.melodyPlayable(music.jumpUp), music.PlaybackMode.UntilDone)
     game.setGameOverEffect(true, effects.confetti)
 })
+scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardLava1, function (sprite, location) {
+    mySprite.setPosition(32, 235)
+    info.changeLifeBy(-1)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Moneda, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+    info.changeScoreBy(1)
+    music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.UntilDone)
+})
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, otherSprite) {
-    sprites.destroy(mySprite)
-    sprites.destroy(mySprite, effects.confetti, 100)
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite, effects.confetti, 100)
     music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.UntilDone)
     info.changeScoreBy(1)
 })
-let projectile: Sprite = null
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    mySprite.setKind(SpriteKind.Player_imnmune)
+    info.changeLifeBy(-1)
+    mySprite.startEffect(effects.disintegrate)
+    music.play(music.melodyPlayable(music.jumpDown), music.PlaybackMode.UntilDone)
+    mySprite.setKind(SpriteKind.Player)
+    mySprite.setImage(img`
+        . . . . . . . c c . . . . . . . 
+        . . . . . . c 5 c . . . . . . . 
+        . . . . c c 5 5 5 c c c . . . . 
+        . . c c c c 5 5 5 5 c b c c . . 
+        . c b b 5 b 5 5 5 5 b 5 b b c . 
+        . c b 5 5 b b 5 5 b b 5 5 b c . 
+        . . c 5 5 5 b b b b 5 5 5 f . . 
+        . . . f 5 5 5 5 5 5 5 5 f f . . 
+        . . . . f e e e f b e e f f . . 
+        . . . . f e b b f 1 b f f f . . 
+        . . . . f b b b b b b f f . . . 
+        . . . . . f e e e e f e e . . . 
+        . . . . . f 5 b b e b b e . . . 
+        . . . . f 5 5 5 5 e b b e . . . 
+        . . . . c b 5 5 5 5 e e . . . . 
+        . . . . . f f f f f f . . . . . 
+        `)
+})
+let projectile2: Sprite = null
 let mySprite: Sprite = null
 scene.setBackgroundImage(img`
     6666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666
@@ -334,9 +334,9 @@ mySprite = sprites.create(img`
     . . c b d d d d d 5 5 5 b b . . 
     . . . c c c c c c c c b b . . . 
     `, SpriteKind.Player)
-mySprite.setPosition(32, 0)
+mySprite.setPosition(10, 235)
 scene.cameraFollowSprite(mySprite)
-controller.moveSprite(mySprite, 100, 0)
+controller.moveSprite(mySprite, 200, 0)
 mySprite.ay = 500
 let mySprite2 = sprites.create(img`
     ........................
@@ -364,7 +364,7 @@ let mySprite2 = sprites.create(img`
     ........................
     ........................
     `, SpriteKind.Enemy)
-mySprite.setPosition(160, 0)
+mySprite.setPosition(100, 230)
 let mySprite3 = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . c c . . . 
@@ -382,8 +382,8 @@ let mySprite3 = sprites.create(img`
     c 5 5 5 c 4 c 5 5 5 c 4 c 5 c . 
     c 5 5 5 5 c 5 5 5 5 c 4 c 5 c . 
     . c c c c c c c c c . . c c c . 
-    `, SpriteKind.Player)
-mySprite.setPosition(0, 0)
+    `, SpriteKind.Enemy)
+mySprite.setPosition(235, 230)
 let mySprite4 = sprites.create(img`
     . . f f f . . . . . . . . f f f 
     . f f c c . . . . . . f c b b c 
@@ -401,8 +401,8 @@ let mySprite4 = sprites.create(img`
     . f b b b b b b b b c f . . . . 
     . . f b b b b b b c f . . . . . 
     . . . f f f f f f f . . . . . . 
-    `, SpriteKind.Player)
-mySprite.setPosition(0, 0)
+    `, SpriteKind.Enemy)
+mySprite.setPosition(300, 230)
 let Moneda = sprites.create(img`
     . . b b b . . . 
     . b 5 5 5 b . . 
@@ -413,7 +413,7 @@ let Moneda = sprites.create(img`
     . f d d d f . . 
     . . f f f . . . 
     `, SpriteKind.Moneda)
-mySprite.setPosition(0, 0)
+mySprite.setPosition(1200, 235)
 let Moneda_2 = sprites.create(img`
     . . b b b . . . 
     . b 5 5 5 b . . 
@@ -424,7 +424,7 @@ let Moneda_2 = sprites.create(img`
     . f d d d f . . 
     . . f f f . . . 
     `, SpriteKind.Moneda)
-mySprite.setPosition(0, 0)
+mySprite.setPosition(800, 235)
 info.setLife(3)
 info.setScore(0)
 game.showLongText("Utilitza els cursors per moure’t i “A” per a disparar als enemics", DialogLayout.Bottom)
